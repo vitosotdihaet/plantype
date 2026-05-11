@@ -1,14 +1,20 @@
 using TMPro;
 using UnityEngine;
 
-public class TypingField : MonoBehaviour {
-    enum State {
+[RequireComponent(typeof(TMP_InputField))]
+public class Typing : MonoBehaviour
+{
+    enum State
+    {
+        Default,
         Bad,
         GoingOk,
-        Match
+        Match,
+        Inspire
     }
 
     private State state;
+
     private TMP_InputField playersInput;
 
     [Header("Text to match")]
@@ -17,72 +23,102 @@ public class TypingField : MonoBehaviour {
     [Header("Reaction to player")]
     [SerializeField] private GameObject reactionGroup;
     [SerializeField] private TMP_Text reactionTextBox;
+    private ReactionAnimator reactionAnimator;
 
     [Header("Text colors")]
     [SerializeField] private Color badColor;
     [SerializeField] private Color goingOkColor;
     [SerializeField] private Color matchColor;
 
-    public void Awake() {
+    private void Awake()
+    {
+        state = State.Default;
         playersInput = GetComponent<TMP_InputField>();
         playersInput.onValueChanged.AddListener(GrabFromInputField);
         playersInput.onEndEdit.AddListener(ActivateInputField);
+        reactionGroup.SetActive(true);
+
+        reactionAnimator = reactionTextBox.GetComponent<ReactionAnimator>();
     }
 
-    public void Start() {
+    public void Start()
+    {
         ActivateInputField("");
-        react();
+        React();
     }
 
-    public void ActivateInputField(string _) {
+    public void ActivateInputField(string _)
+    {
         playersInput.Select();
         playersInput.ActivateInputField();
     }
 
-    public void GrabFromInputField(string _) {
-        react();
+    public void GrabFromInputField(string _)
+    {
+        React();
     }
 
-    private void react(){
-        reactionGroup.SetActive(true);
-        if (playersInput.text.Length == 0) {
-            showInspirationalMessage();
+    private void React()
+    {
+        if (playersInput.text.Length == 0)
+        {
+            SetTextIsInsipre();
             return;
         }
 
-        if (textToInput.text.StartsWith(playersInput.text)) {
-            if (playersInput.text.Length == textToInput.text.Length) {
-                setTextMatches();
-            } else {
-                setTextIsGoingOk();
+        if (textToInput.text.StartsWith(playersInput.text))
+        {
+            if (playersInput.text.Length == textToInput.text.Length)
+            {
+                SetTextMatch();
             }
-        } else {
-            setTextBad();
+            else
+            {
+                SetTextIsGoingOk();
+            }
+        }
+        else
+        {
+            SetTextBad();
         }
     }
 
-    private void setTextBad() {
+    private void SetTextBad()
+    {
         if (state == State.Bad) { return; }
         state = State.Bad;
-        reactionTextBox.text = "bruh.";
+
+        reactionTextBox.text = "damn, you are so bad at this";
         playersInput.textComponent.color = badColor;
+        reactionAnimator.SetBad();
     }
 
-    private void setTextIsGoingOk() {
-        reactionTextBox.text = "ok! " + playersInput.text.Length + "/" + textToInput.text.Length;
+    private void SetTextIsGoingOk()
+    {
         if (state == State.GoingOk) { return; }
         state = State.GoingOk;
+
+        reactionTextBox.text = "keep going!";
         playersInput.textComponent.color = goingOkColor;
+        reactionAnimator.SetGoingOk();
     }
 
-    private void setTextMatches() {
+    private void SetTextMatch()
+    {
         if (state == State.Match) { return; }
         state = State.Match;
+
         reactionTextBox.text = "yay, you did it!";
         playersInput.textComponent.color = matchColor;
+        reactionAnimator.SetMatch();
     }
 
-    private void showInspirationalMessage() {
+    private void SetTextIsInsipre()
+    {
+        if (state == State.Inspire) { return; }
+        state = State.Inspire;
+
         reactionTextBox.text = "start typing, you lazy dog!";
+        reactionAnimator.SetInspire();
     }
 }
