@@ -23,7 +23,7 @@ public class Typing : MonoBehaviour
     [Header("Reaction to player")]
     [SerializeField] private GameObject reactionGroup;
     [SerializeField] private TMP_Text reactionTextBox;
-    private ReactionAnimator reactionAnimator;
+    private ReactionHandler reactionAnimator;
 
     [Header("Text colors")]
     [SerializeField] private Color badColor;
@@ -36,9 +36,10 @@ public class Typing : MonoBehaviour
         playersInput = GetComponent<TMP_InputField>();
         playersInput.onValueChanged.AddListener(GrabFromInputField);
         playersInput.onEndEdit.AddListener(ActivateInputField);
+        // TODO: activate only when the timer starts to count
         reactionGroup.SetActive(true);
 
-        reactionAnimator = reactionTextBox.GetComponent<ReactionAnimator>();
+        reactionAnimator = reactionTextBox.GetComponent<ReactionHandler>();
     }
 
     public void Start()

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class ReactionAnimator : MonoBehaviour
+public class ReactionHandler : MonoBehaviour
 {
     private static readonly int BadHash = Animator.StringToHash("Bad");
     private static readonly int MatchHash = Animator.StringToHash("Match");
